@@ -94,6 +94,7 @@ extension OSLog {
     private var fastForwardGameplayRate: Float = 5.0
     private var isFastForwarding = false
     private var hasStartedEmulation = false
+    private var lastFastForwardPresentTime: TimeInterval = 0
     
     // frame rate debugging
     var previous    = CFTimeInterval()
@@ -737,6 +738,17 @@ extension OSLog {
         
         guard isExecuting || _effectsMode == .displayAlways
         else { return }
+        
+        // While fast-forwarding, present at most 120 frames per second. Waiting for a
+        // drawable for every emulated frame would otherwise cap the emulation speed.
+        if isExecuting && gameCore.rate > 1 {
+            let now = ProcessInfo.processInfo.systemUptime
+            guard now - lastFastForwardPresentTime >= 1.0 / 120.0 else {
+                _skippedFrames += 1
+                return
+            }
+            lastFastForwardPresentTime = now
+        }
         
         guard _inflightSemaphore.wait(timeout: .now()) == .success
         else {
