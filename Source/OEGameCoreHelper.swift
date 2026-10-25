@@ -43,6 +43,18 @@ import AudioToolbox
     ///
     /// - Parameter value: The new volume level, from @c [0,1.0]
     func setVolume(_ value: Float)
+
+    /// Sets the rates used for normal gameplay and fast-forwarding.
+    ///
+    /// - Parameters:
+    ///   - normalRate: The multiplier used during normal gameplay.
+    ///   - fastForwardRate: The multiplier used while fast-forward is active.
+    func setGameplayRate(_ normalRate: Float, fastForwardRate: Float)
+
+    /// Turns fast-forward on or off, as if the Toggle Fast Forward button was pressed.
+    ///
+    /// The helper notifies the owner with @c fastForwardGameplay(_:) when the state changes.
+    func setFastForwardEnabled(_ enabled: Bool)
     
     /**
      * Manage the paused status of the core.
