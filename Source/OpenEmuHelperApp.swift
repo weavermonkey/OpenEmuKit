@@ -96,6 +96,9 @@ extension OSLog {
     private var fastForwardButtonToggles = false
     private var hasStartedEmulation = false
     private var lastFastForwardPresentTime: TimeInterval = 0
+    private var debugFrames = 0
+    private var debugPresented: UInt = 0
+    private var debugLast: TimeInterval = 0
     
     // frame rate debugging
     var previous    = CFTimeInterval()
@@ -739,6 +742,16 @@ extension OSLog {
     public func gameCoreWillEndFrame(_ isExecuting: Bool) {
         defer {
             _scope.end()
+        }
+        
+        // FFDEBUG (test build only): log real emulation speed every 2 s
+        if isExecuting { debugFrames += 1 }
+        let debugNow = ProcessInfo.processInfo.systemUptime
+        if debugNow - debugLast >= 2 {
+            let dt = debugNow - debugLast
+            NSLog("FFDEBUG rate=%.1f emulated_fps=%.0f speed=%.1fx skipped_total=%lu", gameCore.rate, Double(debugFrames) / dt, Double(debugFrames) / dt / gameCore.frameInterval, _skippedFrames)
+            debugFrames = 0
+            debugLast = debugNow
         }
         
         guard isExecuting || _effectsMode == .displayAlways
