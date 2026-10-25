@@ -88,6 +88,10 @@ extension GameCoreManager: OEGameCoreHelper {
     public func setFastForwardEnabled(_ enabled: Bool) {
         gameCoreHelper?.setFastForwardEnabled(enabled)
     }
+
+    public func setFastForwardButtonToggles(_ toggles: Bool) {
+        gameCoreHelper?.setFastForwardButtonToggles(toggles)
+    }
     
     public func setPauseEmulation(_ pauseEmulation: Bool) {
         gameCoreHelper?.setPauseEmulation(pauseEmulation)

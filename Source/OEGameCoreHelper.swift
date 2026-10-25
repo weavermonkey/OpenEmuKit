@@ -55,6 +55,10 @@ import AudioToolbox
     ///
     /// The helper notifies the owner with @c fastForwardGameplay(_:) when the state changes.
     func setFastForwardEnabled(_ enabled: Bool)
+
+    /// When @c true, the hold-to-fast-forward button toggles fast-forward on press
+    /// and ignores release. Defaults to @c false.
+    func setFastForwardButtonToggles(_ toggles: Bool)
     
     /**
      * Manage the paused status of the core.

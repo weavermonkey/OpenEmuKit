@@ -93,6 +93,7 @@ extension OSLog {
     private var normalGameplayRate: Float = 1.0
     private var fastForwardGameplayRate: Float = 5.0
     private var isFastForwarding = false
+    private var fastForwardButtonToggles = false
     private var hasStartedEmulation = false
     private var lastFastForwardPresentTime: TimeInterval = 0
     
@@ -396,7 +397,11 @@ extension OSLog {
     }
     
     public func setFastForwardEnabled(_ enabled: Bool) {
-        fastForwardGameplay(enabled)
+        setFastForward(enabled)
+    }
+    
+    public func setFastForwardButtonToggles(_ toggles: Bool) {
+        fastForwardButtonToggles = toggles
     }
     
     public func setPauseEmulation(_ paused: Bool) {
@@ -886,14 +891,29 @@ extension OSLog {
         gameCoreOwner.takeScreenshot()
     }
     
+    /// Sent by the system responder when the Fast Forward button is pressed (`true`) or released (`false`).
     public func fastForwardGameplay(_ enable: Bool) {
-        isFastForwarding = enable
-        applyGameplayRate()
-        gameCoreOwner.fastForwardGameplay(enable)
+        guard fastForwardButtonToggles else {
+            setFastForward(enable)
+            return
+        }
+        
+        if enable {
+            setFastForward(!isFastForwarding)
+        } else {
+            // The responder also sets the core's rate directly on release; restore the active rate.
+            applyGameplayRate()
+        }
     }
     
     public func toggleFastForwardGameplay(_ sender: Any) {
-        fastForwardGameplay(!isFastForwarding)
+        setFastForward(!isFastForwarding)
+    }
+    
+    private func setFastForward(_ enable: Bool) {
+        isFastForwarding = enable
+        applyGameplayRate()
+        gameCoreOwner.fastForwardGameplay(enable)
     }
     
     public func rewindGameplay(_ enable: Bool) {
